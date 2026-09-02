@@ -1,0 +1,588 @@
+<title>Mob Controller</title>
+<meta name="description" content="Transfórmate en cualquier mob de Minecraft — guía del mod e historial de versiones 0.1.0 a 1.0.0. Español · English · Suomi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --bg: #f1ece1; --surface: #fbf8f1; --surface-2: #ece5d6;
+    --text: #211d17; --muted: #6c6456; --line: #ddd3c1; --line-strong: #cabfa8;
+    --accent: #b9791a; --accent-ink: #8a570f; --accent-soft: #f6ead2; --teal: #16867d;
+    --glow: rgba(185,121,26,.20);
+    --pov: #16867d; --control: #b9791a; --accion: #c0533a; --pulido: #6b5bc4; --estable: #2f8f4e;
+    --shadow: 0 1px 2px rgba(30,24,12,.06), 0 8px 30px rgba(30,24,12,.07);
+    --radius: 14px; --maxw: 1080px;
+    --font-display: "Chakra Petch", system-ui, sans-serif;
+    --font-body: "IBM Plex Sans", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1017; --surface: #161a23; --surface-2: #1e232f;
+      --text: #ece9e1; --muted: #9aa2b1; --line: #272d3a; --line-strong: #333b4b;
+      --accent: #f5b53d; --accent-ink: #f7c25f; --accent-soft: #241d10; --teal: #52d6c8;
+      --glow: rgba(245,181,61,.22);
+      --pov: #52d6c8; --control: #f5b53d; --accion: #f0795e; --pulido: #a99bf0; --estable: #63cf85;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 40px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1017; --surface: #161a23; --surface-2: #1e232f;
+    --text: #ece9e1; --muted: #9aa2b1; --line: #272d3a; --line-strong: #333b4b;
+    --accent: #f5b53d; --accent-ink: #f7c25f; --accent-soft: #241d10; --teal: #52d6c8;
+    --glow: rgba(245,181,61,.22);
+    --pov: #52d6c8; --control: #f5b53d; --accion: #f0795e; --pulido: #a99bf0; --estable: #63cf85;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 40px rgba(0,0,0,.45);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: clamp(18px, 5vw, 40px); }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; letter-spacing: -.01em; }
+  a { color: var(--accent-ink); }
+  .eyebrow { font-family: var(--font-mono); font-size: .72rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+
+  header.top { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .top .wrap { display: flex; align-items: center; gap: 14px; height: 58px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; }
+  .brand .eye { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 50% 45%, var(--accent) 0 22%, color-mix(in srgb, var(--accent) 40%, transparent) 40%, transparent 62%); box-shadow: 0 0 14px var(--glow); position: relative; flex: none; }
+  .brand .eye::after { content:""; position:absolute; inset:35% 0 auto 50%; width:3px; height:30%; transform: translateX(-50%); border-radius:2px; background: var(--bg); }
+  .top nav { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+  .top nav a { font-size: .84rem; color: var(--muted); text-decoration: none; padding: 7px 10px; border-radius: 8px; }
+  .top nav a:hover { color: var(--text); background: var(--surface-2); }
+  .langsel { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-left: 4px; }
+  .langsel button { font-family: var(--font-mono); font-size: .72rem; font-weight: 600; color: var(--muted); background: var(--surface-2); border: 0; padding: 6px 9px; cursor: pointer; }
+  .langsel button + button { border-left: 1px solid var(--line); }
+  .langsel button[aria-pressed="true"] { color: var(--bg); background: var(--accent); }
+  .toggle { font-family: var(--font-mono); font-size: .74rem; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; margin-left: 4px; }
+  .toggle:hover { color: var(--text); border-color: var(--line-strong); }
+  @media (max-width: 720px){ .top nav a.hidesm { display:none; } }
+
+  .hero { position: relative; padding: clamp(48px, 9vw, 96px) 0 clamp(30px,5vw,54px); }
+  .hero::before { content:""; position:absolute; inset:0; z-index:0; pointer-events:none; background: radial-gradient(60% 55% at 78% 18%, var(--glow), transparent 70%), radial-gradient(40% 40% at 12% 6%, color-mix(in srgb, var(--teal) 16%, transparent), transparent 70%); }
+  .hero .wrap { position: relative; z-index: 1; }
+  .finder { position: relative; padding: clamp(24px, 5vw, 46px) clamp(20px,4vw,40px); }
+  .finder .corner { position:absolute; width:26px; height:26px; border:2px solid var(--accent); opacity:.8; }
+  .finder .c-tl{ top:0; left:0; border-right:0; border-bottom:0; } .finder .c-tr{ top:0; right:0; border-left:0; border-bottom:0; }
+  .finder .c-bl{ bottom:0; left:0; border-right:0; border-top:0; } .finder .c-br{ bottom:0; right:0; border-left:0; border-top:0; }
+  .rec { display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); }
+  .rec .dot { width:9px; height:9px; border-radius:50%; background: var(--accion); box-shadow:0 0 10px var(--accion); animation: blink 1.8s steps(1) infinite; }
+  @keyframes blink { 50%{ opacity:.25; } }
+  @media (prefers-reduced-motion: reduce){ .rec .dot { animation:none; } }
+  .hero h1 { font-size: clamp(2.6rem, 8vw, 5rem); font-weight: 700; line-height: .98; margin: 14px 0 0; }
+  .hero h1 .glow { color: var(--accent); text-shadow: 0 0 30px var(--glow); }
+  .hero .lede { font-size: clamp(1.06rem, 2.4vw, 1.3rem); color: var(--muted); max-width: 46ch; margin: 18px 0 0; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+  .badge { font-family: var(--font-mono); font-size: .76rem; font-weight: 500; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--text); display:inline-flex; gap:7px; align-items:center; }
+  .badge b { color: var(--accent-ink); font-weight: 600; }
+  .badge.v { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-ink); }
+
+  section { padding: clamp(48px, 8vw, 88px) 0; }
+  section + section { border-top: 1px solid var(--line); }
+  .sec-head { max-width: 62ch; margin-bottom: 34px; }
+  .sec-head h2 { font-size: clamp(1.7rem, 4vw, 2.5rem); margin-top: 10px; }
+  .sec-head p { color: var(--muted); margin: 12px 0 0; font-size: 1.05rem; }
+
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); }
+  .card .ic { width: 34px; height: 34px; color: var(--accent); margin-bottom: 12px; }
+  .card h3 { font-size: 1.1rem; }
+  .card p { color: var(--muted); margin: 8px 0 0; font-size: .95rem; }
+
+  .flow { display: grid; gap: 14px; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; }
+  .flow .node { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .flow .node .n { font-family: var(--font-mono); font-size: .72rem; color: var(--accent-ink); letter-spacing:.1em; }
+  .flow .node h3 { font-size: 1.05rem; margin: 6px 0; }
+  .flow .node p { margin: 0; color: var(--muted); font-size: .9rem; }
+  .flow .arrow { align-self: center; color: var(--accent); font-family: var(--font-mono); font-size: 1.5rem; }
+  @media (max-width: 760px){ .flow { grid-template-columns: 1fr; } .flow .arrow { transform: rotate(90deg); justify-self: center; } }
+
+  .controls { display: grid; gap: 26px; grid-template-columns: 1.1fr .9fr; align-items: start; }
+  @media (max-width: 820px){ .controls { grid-template-columns: 1fr; } }
+  .keymap { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .keymap li { display: flex; align-items: center; gap: 14px; }
+  .keys { display: inline-flex; gap: 5px; flex: none; min-width: 120px; }
+  kbd { font-family: var(--font-mono); font-size: .78rem; font-weight: 600; background: var(--surface); border: 1px solid var(--line-strong); border-bottom-width: 3px; border-radius: 7px; padding: 5px 9px; color: var(--text); min-width: 30px; text-align: center; }
+  .keymap li span { color: var(--muted); font-size: .96rem; }
+  .keymap li span b { color: var(--text); font-weight: 600; }
+  .modes { display: grid; gap: 12px; }
+  .mode { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; gap: 13px; align-items: flex-start; }
+  .mode .m-ic { font-size: 1.3rem; }
+  .mode h4 { margin: 0 0 2px; font-family: var(--font-display); font-size: 1rem; }
+  .mode p { margin: 0; color: var(--muted); font-size: .9rem; }
+  .cmds { margin-top: 16px; font-family: var(--font-mono); font-size: .86rem; color: var(--muted); }
+  .cmds code { background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; color: var(--accent-ink); }
+
+  .phase-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 30px; }
+  .plg { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: .74rem; color: var(--muted); }
+  .plg i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .timeline { position: relative; margin-left: 6px; }
+  .timeline::before { content:""; position:absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--line-strong); }
+  .rel { position: relative; padding: 0 0 26px 40px; }
+  .rel::before { content:""; position: absolute; left: 0; top: 5px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 3px solid var(--pc, var(--accent)); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pc, var(--accent)) 14%, transparent); }
+  .rel[data-major]::before { width: 18px; height: 18px; left: -1px; top: 4px; background: var(--pc); }
+  .rel .rtop { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .rel .ver { font-family: var(--font-mono); font-weight: 600; font-size: 1.08rem; color: var(--text); }
+  .rel .ptag { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; color: var(--pc); border: 1px solid color-mix(in srgb, var(--pc) 45%, transparent); background: color-mix(in srgb, var(--pc) 12%, transparent); }
+  .rel h3 { font-size: 1.12rem; margin: 7px 0 4px; }
+  .rel ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); }
+  .rel ul li { margin: 4px 0; }
+  .rel ul li b { color: var(--text); font-weight: 600; }
+  .rel .note { font-size: .86rem; color: var(--muted); font-style: italic; margin-top: 6px; }
+
+  .loaders { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); }
+  .loader { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .loader .ld { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; }
+  .loader .st { font-family: var(--font-mono); font-size: .72rem; margin-top: 8px; }
+  .loader .st.ok { color: var(--estable); } .loader .st.wip { color: var(--control); }
+  .loader p { color: var(--muted); font-size: .9rem; margin: 10px 0 0; }
+  .loader .dep { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); margin-top: 10px; }
+
+  .steps { display: grid; gap: 14px; max-width: 64ch; counter-reset: s; }
+  .step { display: flex; gap: 16px; align-items: flex-start; }
+  .step::before { counter-increment: s; content: counter(s); font-family: var(--font-mono); font-weight: 600; color: var(--accent-ink); background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: .9rem; }
+  .step p { margin: 3px 0 0; color: var(--muted); }
+  .step b { color: var(--text); }
+  .step code { font-family: var(--font-mono); font-size: .84rem; background: var(--surface-2); border:1px solid var(--line); border-radius:6px; padding: 1px 6px; color: var(--accent-ink); }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0 60px; color: var(--muted); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+  footer .fbrand { font-family: var(--font-display); font-weight: 700; color: var(--text); }
+  footer small { font-family: var(--font-mono); font-size: .76rem; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><span class="eye" aria-hidden="true"></span> Mob Controller</div>
+    <nav>
+      <a href="#que-es" class="hidesm" data-i18n="nav.que">Qué es</a>
+      <a href="#como" class="hidesm" data-i18n="nav.como">Cómo funciona</a>
+      <a href="#versiones" class="hidesm" data-i18n="nav.versiones">Versiones</a>
+      <div class="langsel" role="group" aria-label="Idioma / Language">
+        <button type="button" data-lang="es">ES</button>
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="fi">FI</button>
+      </div>
+      <button class="toggle" id="themeToggle" type="button" data-i18n="toggle.theme" aria-label="Tema / Theme">tema</button>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="finder">
+      <span class="corner c-tl" aria-hidden="true"></span><span class="corner c-tr" aria-hidden="true"></span>
+      <span class="corner c-bl" aria-hidden="true"></span><span class="corner c-br" aria-hidden="true"></span>
+      <span class="rec"><span class="dot" aria-hidden="true"></span> <span data-i18n="hero.rec">POV · eres la criatura</span></span>
+      <h1 data-i18n="hero.h1">Transfórmate<br><span class="glow">en cualquier mob.</span></h1>
+      <p class="lede" data-i18n="hero.lede">Posee cualquier mob y vívelo por dentro: ves por <b>sus ojos</b>, te mueves como él y usas sus habilidades —caminar, volar, nadar, atacar—. Como cambiar de piel dentro del juego.</p>
+      <div class="badges">
+        <span class="badge v" data-i18n="badge.v">v1.0.0 · estable</span>
+        <span class="badge">Minecraft <b>1.21.1</b></span>
+        <span class="badge">Fabric · NeoForge · Forge</span>
+        <span class="badge" data-i18n="badge.companion">Complemento de <b>Mob Director</b></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section id="que-es">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" data-i18n="quees.eyebrow">El mod</span>
+        <h2 data-i18n="quees.h2">Ser el animal, no dirigirlo desde fuera</h2>
+        <p data-i18n="quees.p">Donde <em>Mob Director</em> mueve a los mobs con comandos, <strong>Mob Controller</strong> te <strong>convierte</strong> en uno: tu cámara pasa a sus ojos y sientes cómo camina, vuela, nada y ataca la criatura, en vez de dejarla a su IA.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <h3 data-i18n="card1.h3">Por sus ojos</h3>
+          <p data-i18n="card1.p">Cámara en primera persona en la cabeza del mob, con giro instantáneo del ratón (sin retardo de red).</p>
+        </div>
+        <div class="card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V10"/><path d="m6 14 6-6 6 6"/><rect x="4" y="3" width="16" height="3" rx="1"/></svg>
+          <h3 data-i18n="card2.h3">Control total</h3>
+          <p data-i18n="card2.p">WASD lo mueve, el ratón lo orienta, salta y sube bloques con la física real del juego. La IA se apaga: mandas tú.</p>
+        </div>
+        <div class="card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>
+          <h3 data-i18n="card3.h3">Vuelo, nado y ataque</h3>
+          <p data-i18n="card3.p">Los voladores vuelan y cualquier mob nada en agua. Click izquierdo golpea; el oso se yergue con un rugido.</p>
+        </div>
+        <div class="card">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.35-7-10a7 7 0 0 1 14 0c0 5.65-7 10-7 10Z"/><circle cx="12" cy="11" r="2.4"/></svg>
+          <h3 data-i18n="card4.h3">HUD y cuerpo visible</h3>
+          <p data-i18n="card4.p">Ves tu cuerpo y patas en 1ª persona, y un HUD con vida, hambre y burbujas de aire para no ahogarte.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" data-i18n="como.eyebrow">Cómo funciona</span>
+        <h2 data-i18n="como.h2">Del jugador al mob, en tres pasos</h2>
+        <p data-i18n="como.p">Montas al mob de forma invisible y tu input lo conduce en el servidor; el cliente pone la cámara en sus ojos. Al salir apareces junto al animal.</p>
+      </div>
+      <div class="flow">
+        <div class="node">
+          <span class="n" data-i18n="flow1.n">01 · POSEER</span>
+          <h3 data-i18n="flow1.h3">Eliges el mob</h3>
+          <p data-i18n="flow1.p">Míralo y usa <b>/possess</b>, un selector <b>@e[tag=…]</b>, o agáchate y haz click derecho.</p>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node">
+          <span class="n" data-i18n="flow2.n">02 · CONDUCIR</span>
+          <h3 data-i18n="flow2.h3">Lo actúas tú</h3>
+          <p data-i18n="flow2.p">Montas invisible sobre él; tu WASD + ratón lo mueven y giran. Su IA se apaga.</p>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="node">
+          <span class="n" data-i18n="flow3.n">03 · SER</span>
+          <h3 data-i18n="flow3.h3">Eres el mob</h3>
+          <p data-i18n="flow3.p">Cámara en su cabeza, cuerpo visible y HUD. Sales con <b>V</b> y vuelves a ser tú, junto al animal.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="controles">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" data-i18n="ctrl.eyebrow">Mando</span>
+        <h2 data-i18n="ctrl.h2">Controles y modos</h2>
+        <p data-i18n="ctrl.p">El mod detecta el tipo de mob y ajusta el modo: terrestre, vuelo o nado. Requiere OP nivel 2.</p>
+      </div>
+      <div class="controls">
+        <ul class="keymap">
+          <li><span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span> <span data-i18n="km1">Mover / avanzar hacia donde miras</span></li>
+          <li><span class="keys"><kbd data-i18n="kbd.mouse">Ratón</kbd></span> <span data-i18n="km2">Orientar la cabeza (giro <b>instantáneo</b>)</span></li>
+          <li><span class="keys"><kbd data-i18n="kbd.space">Espacio</kbd></span> <span data-i18n="km3">Saltar · <b>subir</b> en vuelo/nado</span></li>
+          <li><span class="keys"><kbd>Shift</kbd></span> <span data-i18n="km4">Ir despacio · <b>bajar</b> en vuelo/nado</span></li>
+          <li><span class="keys"><kbd data-i18n="kbd.lclick">Click izq.</kbd></span> <span data-i18n="km5">El mob <b>golpea</b> lo que tiene delante (con sonido)</span></li>
+          <li><span class="keys"><kbd>R</kbd></span> <span data-i18n="km6">Pose de preparado · el <b>oso se yergue</b> con rugido</span></li>
+          <li><span class="keys"><kbd>V</kbd></span> <span data-i18n="km7">Salir de la posesión</span></li>
+        </ul>
+        <div>
+          <div class="modes">
+            <div class="mode"><span class="m-ic">🐾</span><div><h4 data-i18n="mode1.h4">Terrestre</h4><p data-i18n="mode1.p">Zombis, esqueletos, vacas, osos, lobos… gravedad, salto y subir bloques.</p></div></div>
+            <div class="mode"><span class="m-ic">🕊️</span><div><h4 data-i18n="mode2.h4">Vuelo</h4><p data-i18n="mode2.p">Abejas, loros, ghasts, allays… movimiento libre en 3D siguiendo la mirada.</p></div></div>
+            <div class="mode"><span class="m-ic">🌊</span><div><h4 data-i18n="mode3.h4">Nado</h4><p data-i18n="mode3.p">Cualquier mob dentro del agua entra en control 3D: espacio sube, agacharse baja.</p></div></div>
+          </div>
+          <p class="cmds"><span data-i18n="cmds.label">Comandos:</span> <code>/possess</code> · <code>/possess @e[tag=oso,limit=1]</code> · <code>/unpossess</code></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="versiones">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" data-i18n="ver.eyebrow">Historial · releases</span>
+        <h2 data-i18n="ver.h2">De la 0.1.0 a la 1.0.0</h2>
+        <p data-i18n="ver.p">El camino completo del mod en Fabric hasta la primera versión estable, agrupado por fases de desarrollo. Cada entrada resume qué trae ese release.</p>
+      </div>
+      <div class="phase-legend">
+        <span class="plg"><i style="background:var(--pov)"></i> POV</span>
+        <span class="plg"><i style="background:var(--control)"></i> <span data-i18n="legend.control">Control</span></span>
+        <span class="plg"><i style="background:var(--accion)"></i> <span data-i18n="legend.accion">Acción</span></span>
+        <span class="plg"><i style="background:var(--pulido)"></i> <span data-i18n="legend.pulido">Pulido</span></span>
+        <span class="plg"><i style="background:var(--estable)"></i> <span data-i18n="legend.estable">Estable</span></span>
+      </div>
+      <div class="timeline">
+        <article class="rel" data-major style="--pc:var(--pov)">
+          <div class="rtop"><span class="ver">0.1.0</span><span class="ptag" data-i18n="rel1.tag">Fase 1 · POV</span></div>
+          <h3 data-i18n="rel1.h3">Ver por los ojos del mob</h3>
+          <ul data-i18n="rel1.ul"><li>Cámara a los ojos del mob (<b>setCameraEntity</b>), primera persona.</li><li>Poseer con <b>/possess</b> (mira o selector) y con <b>agacharse + click derecho</b>.</li><li>Salir con la tecla <b>V</b> o <b>/unpossess</b>; tu cuerpo queda oculto e invulnerable.</li><li>Auto-salida si el mob muere o te desconectas.</li></ul>
+        </article>
+        <article class="rel" data-major style="--pc:var(--control)">
+          <div class="rtop"><span class="ver">0.2.0</span><span class="ptag" data-i18n="rel2.tag">Fase 2 · Control</span></div>
+          <h3 data-i18n="rel2.h3">Control total con WASD + ratón</h3>
+          <ul data-i18n="rel2.ul"><li>El input del jugador viaja al servidor por un packet (<b>DriveInput</b>) y conduce al mob.</li><li>Se <b>apaga la IA</b> del mob para que no pelee con tus controles.</li></ul>
+          <p class="note" data-i18n="rel2.note">El movimiento aún tenía un fallo, corregido en la 0.3.0.</p>
+        </article>
+        <article class="rel" style="--pc:var(--control)">
+          <div class="rtop"><span class="ver">0.3.0</span><span class="ptag" data-i18n="rel3.tag">Control</span></div>
+          <h3 data-i18n="rel3.h3">Arreglo de movimiento + ataque seguro</h3>
+          <ul data-i18n="rel3.ul"><li>Con <b>NoAI</b> el <b>travel()</b> del mob no aplica movimiento → se mueve a mano con <b>mob.move()</b> (física manual: control, gravedad y salto propios).</li><li>Mixin de cliente que <b>cancela el ataque</b> vanilla para no golpearte a ti mismo.</li></ul>
+        </article>
+        <article class="rel" data-major style="--pc:var(--accion)">
+          <div class="rtop"><span class="ver">0.4.0</span><span class="ptag" data-i18n="rel4.tag">Fase 3 · Acción</span></div>
+          <h3 data-i18n="rel4.h3">Vuelo, nado, atacar y pose</h3>
+          <ul data-i18n="rel4.ul"><li><b>Voladores y acuáticos</b> en 3D (espacio sube, agacharse baja).</li><li><b>Click izquierdo</b>: el mob golpea lo que tiene delante (raycast desde sus ojos).</li><li>Tecla <b>R</b>: pose agresiva (<b>setAggressive</b>).</li></ul>
+        </article>
+        <article class="rel" data-major style="--pc:var(--pulido)">
+          <div class="rtop"><span class="ver">0.5.0</span><span class="ptag" data-i18n="rel5.tag">Pulido</span></div>
+          <h3 data-i18n="rel5.h3">Montar invisible en vez de teletransportar</h3>
+          <ul data-i18n="rel5.ul"><li>Ahora <b>montas al mob</b> (jinete invisible): movimiento suave, sin tirones ni empujones.</li><li>Al salir apareces <b>junto al animal</b>, no donde lo poseíste.</li><li>Mixin común (<b>wantsToStopRiding → false</b>): agacharse ya no te desmonta.</li></ul>
+        </article>
+        <article class="rel" style="--pc:var(--pulido)">
+          <div class="rtop"><span class="ver">0.6.0 – 0.6.2</span><span class="ptag" data-i18n="rel6.tag">Pulido</span></div>
+          <h3 data-i18n="rel6.h3">Cuerpo visible en primera persona</h3>
+          <ul data-i18n="rel6.ul"><li><b>0.6.0</b> — se renderiza el cuerpo del mob poseído (ves patas/brazos); cabeza oculta en humanoides. Pose y animación de ataque visibles.</li><li><b>0.6.1</b> — ocultado de cabeza genérico para animales.</li><li><b>0.6.2</b> — cámara elevada en cuadrúpedos (se sentía como montar → revertido).</li></ul>
+        </article>
+        <article class="rel" data-major style="--pc:var(--pulido)">
+          <div class="rtop"><span class="ver">0.7.0</span><span class="ptag" data-i18n="rel7.tag">Pulido</span></div>
+          <h3 data-i18n="rel7.h3">Cámara instantánea, sin sensación de montar</h3>
+          <ul data-i18n="rel7.ul"><li>La vista <b>gira al instante</b> con el ratón (setRotation cada fotograma), sin retardo de red.</li><li>Revertida la cámara elevada; cuadrúpedos con vista limpia desde los ojos.</li></ul>
+        </article>
+        <article class="rel" data-major style="--pc:var(--pulido)">
+          <div class="rtop"><span class="ver">0.8.0</span><span class="ptag" data-i18n="rel8.tag">Pulido</span></div>
+          <h3 data-i18n="rel8.h3">Patas visibles y oso de pie</h3>
+          <ul data-i18n="rel8.ul"><li>En cuadrúpedos/lobo se oculta cabeza y torso <b>dejando las patas</b> (accessors de QuadrupedModel/WolfModel).</li><li>El <b>oso se para en dos patas</b> (setStanding) con la tecla R.</li><li>Sonidos de aviso: rugido del oso, gruñido del lobo, o su sonido ambiente.</li></ul>
+        </article>
+        <article class="rel" style="--pc:var(--pulido)">
+          <div class="rtop"><span class="ver">0.9.0 – 0.9.4</span><span class="ptag" data-i18n="rel9.tag">Pulido</span></div>
+          <h3 data-i18n="rel9.h3">Cámara en la cabeza, calibrada por mob</h3>
+          <ul data-i18n="rel9.ul"><li><b>0.9.0</b> — la cámara se adelanta a la cabeza en cuadrúpedos; cualquier mob nada en agua.</li><li><b>0.9.1</b> — el cuerpo se alinea al instante con tu mirada.</li><li><b>0.9.2 · 0.9.3</b> — se afina usando la <b>posición real de la cabeza</b> del modelo (head.z).</li><li><b>0.9.4</b> — el oso de pie muestra patas y torso; el click de ataque ahora suena.</li></ul>
+        </article>
+        <article class="rel" data-major style="--pc:var(--estable)">
+          <div class="rtop"><span class="ver">1.0.0</span><span class="ptag" data-i18n="rel10.tag">Estable</span></div>
+          <h3 data-i18n="rel10.h3">HUD de posesión — primera versión estable</h3>
+          <ul data-i18n="rel10.ul"><li>HUD arriba y al centro: <b>corazones</b> (vida del mob), <b>hambre</b> y <b>burbujas de aire</b> (al bucear), con iconos vanilla.</li><li>El mod queda redondo: posesión fluida, cuerpo bien encuadrado, ataque, pose y feedback en pantalla.</li><li><b>Después de la 1.0.0:</b> portado a <b>NeoForge y Forge</b> (monorepo multiloader).</li></ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="loaders">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Multiloader</span>
+        <h2 data-i18n="ld.h2">Un mod, tres loaders</h2>
+        <p data-i18n="ld.p">La lógica vive una vez en <span style="font-family:var(--font-mono)">common/</span> y cada loader aporta su arranque (eventos + red) sobre una capa abstracta.</p>
+      </div>
+      <div class="loaders">
+        <div class="loader">
+          <div class="ld">Fabric</div>
+          <div class="st ok" data-i18n="ld.fabric.st">● probado en juego</div>
+          <p>PayloadTypeRegistry · ServerPlayNetworking · HudRenderCallback</p>
+          <div class="dep">loader 0.19.3 · Fabric API 0.116.13</div>
+        </div>
+        <div class="loader">
+          <div class="ld">NeoForge</div>
+          <div class="st wip" data-i18n="ld.wip">◐ compila · a probar</div>
+          <p>RegisterPayloadHandlersEvent · PacketDistributor · RegisterGuiLayersEvent</p>
+          <div class="dep">NeoForge 21.1.248</div>
+        </div>
+        <div class="loader">
+          <div class="ld">Forge</div>
+          <div class="st wip" data-i18n="ld.wip">◐ compila · a probar</div>
+          <p>ChannelBuilder.payloadChannel() · PacketDistributor · AddGuiOverlayLayersEvent</p>
+          <div class="dep">Forge 1.21.1-52.1.16</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="instalar">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow" data-i18n="inst.eyebrow">Instalar</span>
+        <h2 data-i18n="inst.h2">Poner en marcha</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><p data-i18n="step1">Descarga el jar de <b>tu loader</b> desde la pestaña <b>Releases</b> (<code>mobcontroller-&lt;loader&gt;-1.0.0.jar</code>).</p></div>
+        <div class="step"><p data-i18n="step2">Ponlo en <code>.minecraft/mods</code>. En <b>Fabric</b> añade también <b>Fabric API</b>.</p></div>
+        <div class="step"><p data-i18n="step3">Instálalo en el <b>cliente</b> y, en multijugador, también en el <b>servidor</b> (la cámara es del cliente).</p></div>
+        <div class="step"><p data-i18n="step4">Entra a un mundo con <b>trucos</b> (OP nivel 2), mira un mob y usa <code>/possess</code> o agáchate + click derecho.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="fbrand">Mob Controller</div>
+      <small data-i18n="foot.by">Minecraft 1.21.1 · Fabric · NeoForge · Forge · por Kalevi Latva-äijö</small>
+    </div>
+    <small data-i18n="foot.right">Complemento de Mob Director · licencia CC0-1.0</small>
+  </div>
+</footer>
+
+<script>
+  var I18N = {
+    es: {
+      "nav.que":"Qué es","nav.como":"Cómo funciona","nav.versiones":"Versiones","toggle.theme":"tema",
+      "hero.rec":"POV · eres la criatura",
+      "hero.h1":"Transfórmate<br><span class='glow'>en cualquier mob.</span>",
+      "hero.lede":"Posee cualquier mob y vívelo por dentro: ves por <b>sus ojos</b>, te mueves como él y usas sus habilidades —caminar, volar, nadar, atacar—. Como cambiar de piel dentro del juego.",
+      "badge.v":"v1.0.0 · estable","badge.companion":"Complemento de <b>Mob Director</b>",
+      "quees.eyebrow":"El mod","quees.h2":"Ser el animal, no dirigirlo desde fuera",
+      "quees.p":"Donde <em>Mob Director</em> mueve a los mobs con comandos, <strong>Mob Controller</strong> te <strong>convierte</strong> en uno: tu cámara pasa a sus ojos y sientes cómo camina, vuela, nada y ataca la criatura, en vez de dejarla a su IA.",
+      "card1.h3":"Por sus ojos","card1.p":"Cámara en primera persona en la cabeza del mob, con giro instantáneo del ratón (sin retardo de red).",
+      "card2.h3":"Control total","card2.p":"WASD lo mueve, el ratón lo orienta, salta y sube bloques con la física real del juego. La IA se apaga: mandas tú.",
+      "card3.h3":"Vuelo, nado y ataque","card3.p":"Los voladores vuelan y cualquier mob nada en agua. Click izquierdo golpea; el oso se yergue con un rugido.",
+      "card4.h3":"HUD y cuerpo visible","card4.p":"Ves tu cuerpo y patas en 1ª persona, y un HUD con vida, hambre y burbujas de aire para no ahogarte.",
+      "como.eyebrow":"Cómo funciona","como.h2":"Del jugador al mob, en tres pasos",
+      "como.p":"Montas al mob de forma invisible y tu input lo conduce en el servidor; el cliente pone la cámara en sus ojos. Al salir apareces junto al animal.",
+      "flow1.n":"01 · POSEER","flow1.h3":"Eliges el mob","flow1.p":"Míralo y usa <b>/possess</b>, un selector <b>@e[tag=…]</b>, o agáchate y haz click derecho.",
+      "flow2.n":"02 · CONDUCIR","flow2.h3":"Lo actúas tú","flow2.p":"Montas invisible sobre él; tu WASD + ratón lo mueven y giran. Su IA se apaga.",
+      "flow3.n":"03 · SER","flow3.h3":"Eres el mob","flow3.p":"Cámara en su cabeza, cuerpo visible y HUD. Sales con <b>V</b> y vuelves a ser tú, junto al animal.",
+      "ctrl.eyebrow":"Mando","ctrl.h2":"Controles y modos","ctrl.p":"El mod detecta el tipo de mob y ajusta el modo: terrestre, vuelo o nado. Requiere OP nivel 2.",
+      "kbd.mouse":"Ratón","kbd.space":"Espacio","kbd.lclick":"Click izq.",
+      "km1":"Mover / avanzar hacia donde miras","km2":"Orientar la cabeza (giro <b>instantáneo</b>)","km3":"Saltar · <b>subir</b> en vuelo/nado","km4":"Ir despacio · <b>bajar</b> en vuelo/nado","km5":"El mob <b>golpea</b> lo que tiene delante (con sonido)","km6":"Pose de preparado · el <b>oso se yergue</b> con rugido","km7":"Salir de la posesión",
+      "mode1.h4":"Terrestre","mode1.p":"Zombis, esqueletos, vacas, osos, lobos… gravedad, salto y subir bloques.",
+      "mode2.h4":"Vuelo","mode2.p":"Abejas, loros, ghasts, allays… movimiento libre en 3D siguiendo la mirada.",
+      "mode3.h4":"Nado","mode3.p":"Cualquier mob dentro del agua entra en control 3D: espacio sube, agacharse baja.",
+      "cmds.label":"Comandos:",
+      "ver.eyebrow":"Historial · releases","ver.h2":"De la 0.1.0 a la 1.0.0","ver.p":"El camino completo del mod en Fabric hasta la primera versión estable, agrupado por fases de desarrollo. Cada entrada resume qué trae ese release.",
+      "legend.control":"Control","legend.accion":"Acción","legend.pulido":"Pulido","legend.estable":"Estable",
+      "rel1.tag":"Fase 1 · POV","rel1.h3":"Ver por los ojos del mob","rel1.ul":"<li>Cámara a los ojos del mob (<b>setCameraEntity</b>), primera persona.</li><li>Poseer con <b>/possess</b> (mira o selector) y con <b>agacharse + click derecho</b>.</li><li>Salir con la tecla <b>V</b> o <b>/unpossess</b>; tu cuerpo queda oculto e invulnerable.</li><li>Auto-salida si el mob muere o te desconectas.</li>",
+      "rel2.tag":"Fase 2 · Control","rel2.h3":"Control total con WASD + ratón","rel2.ul":"<li>El input del jugador viaja al servidor por un packet (<b>DriveInput</b>) y conduce al mob.</li><li>Se <b>apaga la IA</b> del mob para que no pelee con tus controles.</li>","rel2.note":"El movimiento aún tenía un fallo, corregido en la 0.3.0.",
+      "rel3.tag":"Control","rel3.h3":"Arreglo de movimiento + ataque seguro","rel3.ul":"<li>Con <b>NoAI</b> el <b>travel()</b> del mob no aplica movimiento → se mueve a mano con <b>mob.move()</b> (física manual: control, gravedad y salto propios).</li><li>Mixin de cliente que <b>cancela el ataque</b> vanilla para no golpearte a ti mismo.</li>",
+      "rel4.tag":"Fase 3 · Acción","rel4.h3":"Vuelo, nado, atacar y pose","rel4.ul":"<li><b>Voladores y acuáticos</b> en 3D (espacio sube, agacharse baja).</li><li><b>Click izquierdo</b>: el mob golpea lo que tiene delante (raycast desde sus ojos).</li><li>Tecla <b>R</b>: pose agresiva (<b>setAggressive</b>).</li>",
+      "rel5.tag":"Pulido","rel5.h3":"Montar invisible en vez de teletransportar","rel5.ul":"<li>Ahora <b>montas al mob</b> (jinete invisible): movimiento suave, sin tirones ni empujones.</li><li>Al salir apareces <b>junto al animal</b>, no donde lo poseíste.</li><li>Mixin común (<b>wantsToStopRiding → false</b>): agacharse ya no te desmonta.</li>",
+      "rel6.tag":"Pulido","rel6.h3":"Cuerpo visible en primera persona","rel6.ul":"<li><b>0.6.0</b> — se renderiza el cuerpo del mob poseído (ves patas/brazos); cabeza oculta en humanoides. Pose y animación de ataque visibles.</li><li><b>0.6.1</b> — ocultado de cabeza genérico para animales.</li><li><b>0.6.2</b> — cámara elevada en cuadrúpedos (se sentía como montar → revertido).</li>",
+      "rel7.tag":"Pulido","rel7.h3":"Cámara instantánea, sin sensación de montar","rel7.ul":"<li>La vista <b>gira al instante</b> con el ratón (setRotation cada fotograma), sin retardo de red.</li><li>Revertida la cámara elevada; cuadrúpedos con vista limpia desde los ojos.</li>",
+      "rel8.tag":"Pulido","rel8.h3":"Patas visibles y oso de pie","rel8.ul":"<li>En cuadrúpedos/lobo se oculta cabeza y torso <b>dejando las patas</b> (accessors de QuadrupedModel/WolfModel).</li><li>El <b>oso se para en dos patas</b> (setStanding) con la tecla R.</li><li>Sonidos de aviso: rugido del oso, gruñido del lobo, o su sonido ambiente.</li>",
+      "rel9.tag":"Pulido","rel9.h3":"Cámara en la cabeza, calibrada por mob","rel9.ul":"<li><b>0.9.0</b> — la cámara se adelanta a la cabeza en cuadrúpedos; cualquier mob nada en agua.</li><li><b>0.9.1</b> — el cuerpo se alinea al instante con tu mirada.</li><li><b>0.9.2 · 0.9.3</b> — se afina usando la <b>posición real de la cabeza</b> del modelo (head.z).</li><li><b>0.9.4</b> — el oso de pie muestra patas y torso; el click de ataque ahora suena.</li>",
+      "rel10.tag":"Estable","rel10.h3":"HUD de posesión — primera versión estable","rel10.ul":"<li>HUD arriba y al centro: <b>corazones</b> (vida del mob), <b>hambre</b> y <b>burbujas de aire</b> (al bucear), con iconos vanilla.</li><li>El mod queda redondo: posesión fluida, cuerpo bien encuadrado, ataque, pose y feedback en pantalla.</li><li><b>Después de la 1.0.0:</b> portado a <b>NeoForge y Forge</b> (monorepo multiloader).</li>",
+      "ld.h2":"Un mod, tres loaders","ld.p":"La lógica vive una vez en <span style='font-family:var(--font-mono)'>common/</span> y cada loader aporta su arranque (eventos + red) sobre una capa abstracta.","ld.fabric.st":"● probado en juego","ld.wip":"◐ compila · a probar",
+      "inst.eyebrow":"Instalar","inst.h2":"Poner en marcha",
+      "step1":"Descarga el jar de <b>tu loader</b> desde la pestaña <b>Releases</b> (<code>mobcontroller-&lt;loader&gt;-1.0.0.jar</code>).",
+      "step2":"Ponlo en <code>.minecraft/mods</code>. En <b>Fabric</b> añade también <b>Fabric API</b>.",
+      "step3":"Instálalo en el <b>cliente</b> y, en multijugador, también en el <b>servidor</b> (la cámara es del cliente).",
+      "step4":"Entra a un mundo con <b>trucos</b> (OP nivel 2), mira un mob y usa <code>/possess</code> o agáchate + click derecho.",
+      "foot.by":"Minecraft 1.21.1 · Fabric · NeoForge · Forge · por Kalevi Latva-äijö","foot.right":"Complemento de Mob Director · licencia CC0-1.0"
+    },
+    en: {
+      "nav.que":"About","nav.como":"How it works","nav.versiones":"Versions","toggle.theme":"theme",
+      "hero.rec":"POV · you are the creature",
+      "hero.h1":"Turn into<br><span class='glow'>any mob.</span>",
+      "hero.lede":"Possess any mob and live inside it: you see through <b>its eyes</b>, move like it and use its abilities —walk, fly, swim, attack—. Like changing your skin inside the game.",
+      "badge.v":"v1.0.0 · stable","badge.companion":"Companion to <b>Mob Director</b>",
+      "quees.eyebrow":"The mod","quees.h2":"Be the animal, not its puppeteer",
+      "quees.p":"Where <em>Mob Director</em> moves mobs with commands, <strong>Mob Controller</strong> <strong>turns you into</strong> one: your camera moves to its eyes and you feel how the creature walks, flies, swims and attacks, instead of leaving it to its AI.",
+      "card1.h3":"Through its eyes","card1.p":"First-person camera in the mob's head, with instant mouse look (no network lag).",
+      "card2.h3":"Full control","card2.p":"WASD moves it, the mouse aims it, it jumps and climbs blocks with the game's real physics. The AI turns off: you're in charge.",
+      "card3.h3":"Flight, swimming and attacks","card3.p":"Flyers fly and any mob swims in water. Left-click attacks; the bear rears up with a roar.",
+      "card4.h3":"HUD and visible body","card4.p":"You see your body and legs in first person, plus a HUD with health, hunger and air bubbles so you don't drown.",
+      "como.eyebrow":"How it works","como.h2":"From player to mob, in three steps",
+      "como.p":"You ride the mob invisibly and your input drives it on the server; the client puts the camera in its eyes. On exit you appear next to the animal.",
+      "flow1.n":"01 · POSSESS","flow1.h3":"You pick the mob","flow1.p":"Look at it and use <b>/possess</b>, a <b>@e[tag=…]</b> selector, or sneak and right-click.",
+      "flow2.n":"02 · DRIVE","flow2.h3":"You act it out","flow2.p":"You ride it invisibly; your WASD + mouse move and turn it. Its AI turns off.",
+      "flow3.n":"03 · BE","flow3.h3":"You are the mob","flow3.p":"Camera in its head, visible body and HUD. Exit with <b>V</b> and you're yourself again, next to the animal.",
+      "ctrl.eyebrow":"Controls","ctrl.h2":"Controls and modes","ctrl.p":"The mod detects the mob type and sets the mode: ground, flight or swim. Requires OP level 2.",
+      "kbd.mouse":"Mouse","kbd.space":"Space","kbd.lclick":"Left click",
+      "km1":"Move / go where you look","km2":"Aim the head (<b>instant</b> turn)","km3":"Jump · <b>up</b> in flight/swim","km4":"Move slowly · <b>down</b> in flight/swim","km5":"The mob <b>attacks</b> what's in front (with sound)","km6":"Ready pose · the <b>bear rears up</b> with a roar","km7":"Exit possession",
+      "mode1.h4":"Ground","mode1.p":"Zombies, skeletons, cows, bears, wolves… gravity, jumping and climbing blocks.",
+      "mode2.h4":"Flight","mode2.p":"Bees, parrots, ghasts, allays… free 3D movement following your look.",
+      "mode3.h4":"Swim","mode3.p":"Any mob underwater enters 3D control: space up, sneak down.",
+      "cmds.label":"Commands:",
+      "ver.eyebrow":"History · releases","ver.h2":"From 0.1.0 to 1.0.0","ver.p":"The mod's full journey on Fabric to the first stable version, grouped by development phase. Each entry summarizes what that release brings.",
+      "legend.control":"Control","legend.accion":"Action","legend.pulido":"Polish","legend.estable":"Stable",
+      "rel1.tag":"Phase 1 · POV","rel1.h3":"See through the mob's eyes","rel1.ul":"<li>Camera to the mob's eyes (<b>setCameraEntity</b>), first person.</li><li>Possess with <b>/possess</b> (look or selector) and with <b>sneak + right-click</b>.</li><li>Exit with the <b>V</b> key or <b>/unpossess</b>; your body stays hidden and invulnerable.</li><li>Auto-exit if the mob dies or you disconnect.</li>",
+      "rel2.tag":"Phase 2 · Control","rel2.h3":"Full control with WASD + mouse","rel2.ul":"<li>Player input travels to the server via a packet (<b>DriveInput</b>) and drives the mob.</li><li>The mob's <b>AI turns off</b> so it doesn't fight your controls.</li>","rel2.note":"Movement still had a bug, fixed in 0.3.0.",
+      "rel3.tag":"Control","rel3.h3":"Movement fix + safe attack","rel3.ul":"<li>With <b>NoAI</b> the mob's <b>travel()</b> applies no movement → it's moved manually with <b>mob.move()</b> (manual physics: control, gravity and jump).</li><li>A client mixin that <b>cancels the attack</b> so you don't hit yourself.</li>",
+      "rel4.tag":"Phase 3 · Action","rel4.h3":"Flight, swim, attack and pose","rel4.ul":"<li><b>Flyers and aquatics</b> in 3D (space up, sneak down).</li><li><b>Left click</b>: the mob hits what's in front (raycast from its eyes).</li><li><b>R</b> key: aggressive pose (<b>setAggressive</b>).</li>",
+      "rel5.tag":"Polish","rel5.h3":"Invisible riding instead of teleporting","rel5.ul":"<li>Now you <b>ride the mob</b> (invisible rider): smooth movement, no jitter or pushing.</li><li>On exit you appear <b>next to the animal</b>, not where you possessed it.</li><li>Common mixin (<b>wantsToStopRiding → false</b>): sneaking no longer dismounts you.</li>",
+      "rel6.tag":"Polish","rel6.h3":"Visible body in first person","rel6.ul":"<li><b>0.6.0</b> — the possessed mob's body is rendered (you see legs/arms); head hidden for humanoids. Pose and attack animation visible.</li><li><b>0.6.1</b> — generic head hiding for animals.</li><li><b>0.6.2</b> — raised camera for quadrupeds (felt like mounting → reverted).</li>",
+      "rel7.tag":"Polish","rel7.h3":"Instant camera, no mounted feel","rel7.ul":"<li>The view <b>turns instantly</b> with the mouse (setRotation per frame), no network lag.</li><li>Raised camera reverted; quadrupeds with a clean view from the eyes.</li>",
+      "rel8.tag":"Polish","rel8.h3":"Visible legs and rearing bear","rel8.ul":"<li>For quadrupeds/wolf the head and torso are hidden <b>keeping the legs</b> (QuadrupedModel/WolfModel accessors).</li><li>The <b>bear rears on two legs</b> (setStanding) with the R key.</li><li>Warning sounds: bear roar, wolf growl, or its ambient sound.</li>",
+      "rel9.tag":"Polish","rel9.h3":"Camera in the head, calibrated per mob","rel9.ul":"<li><b>0.9.0</b> — the camera moves forward to the head on quadrupeds; any mob swims in water.</li><li><b>0.9.1</b> — the body aligns instantly to your look.</li><li><b>0.9.2 · 0.9.3</b> — refined using the model's <b>real head position</b> (head.z).</li><li><b>0.9.4</b> — the rearing bear shows legs and torso; the attack click now has sound.</li>",
+      "rel10.tag":"Stable","rel10.h3":"Possession HUD — first stable version","rel10.ul":"<li>HUD at the top center: <b>hearts</b> (mob health), <b>hunger</b> and <b>air bubbles</b> (when diving), with vanilla icons.</li><li>The mod is rounded out: smooth possession, well-framed body, attack, pose and on-screen feedback.</li><li><b>After 1.0.0:</b> ported to <b>NeoForge and Forge</b> (multiloader monorepo).</li>",
+      "ld.h2":"One mod, three loaders","ld.p":"The logic lives once in <span style='font-family:var(--font-mono)'>common/</span> and each loader adds its entry point (events + networking) over an abstraction layer.","ld.fabric.st":"● tested in-game","ld.wip":"◐ compiles · to test",
+      "inst.eyebrow":"Install","inst.h2":"Get started",
+      "step1":"Download the jar for <b>your loader</b> from the <b>Releases</b> tab (<code>mobcontroller-&lt;loader&gt;-1.0.0.jar</code>).",
+      "step2":"Put it in <code>.minecraft/mods</code>. On <b>Fabric</b> also add <b>Fabric API</b>.",
+      "step3":"Install it on the <b>client</b> and, in multiplayer, also on the <b>server</b> (the camera is client-side).",
+      "step4":"Enter a world with <b>cheats</b> (OP level 2), look at a mob and use <code>/possess</code> or sneak + right-click.",
+      "foot.by":"Minecraft 1.21.1 · Fabric · NeoForge · Forge · by Kalevi Latva-äijö","foot.right":"Companion to Mob Director · CC0-1.0 license"
+    },
+    fi: {
+      "nav.que":"Tietoa","nav.como":"Miten toimii","nav.versiones":"Versiot","toggle.theme":"teema",
+      "hero.rec":"POV · olet olento",
+      "hero.h1":"Muutu<br><span class='glow'>miksi tahansa mobiksi.</span>",
+      "hero.lede":"Ota mikä tahansa mob haltuun ja elä sen sisällä: näet <b>sen silmien</b> läpi, liikut kuten se ja käytät sen kykyjä —kävele, lennä, ui, hyökkää—. Kuin vaihtaisit nahkaa pelin sisällä.",
+      "badge.v":"v1.0.0 · vakaa","badge.companion":"<b>Mob Director</b> -modin kumppani",
+      "quees.eyebrow":"Modi","quees.h2":"Ole eläin, älä ohjaile sitä ulkoa",
+      "quees.p":"Siinä missä <em>Mob Director</em> liikuttaa mobeja komennoilla, <strong>Mob Controller</strong> <strong>muuttaa sinut</strong> sellaiseksi: kamera siirtyy sen silmiin ja tunnet, miten olento kävelee, lentää, ui ja hyökkää, sen sijaan että se jätettäisiin tekoälynsä varaan.",
+      "card1.h3":"Sen silmien läpi","card1.p":"Ensimmäisen persoonan kamera mobin päässä, välittömällä hiiriohjauksella (ei verkkoviivettä).",
+      "card2.h3":"Täysi hallinta","card2.p":"WASD liikuttaa, hiiri suuntaa, se hyppää ja nousee lohkojen yli pelin oikealla fysiikalla. Tekoäly sammuu: sinä määräät.",
+      "card3.h3":"Lento, uinti ja hyökkäys","card3.p":"Lentävät lentävät ja mikä tahansa mob ui vedessä. Vasen napsautus hyökkää; karhu nousee karjahtaen.",
+      "card4.h3":"HUD ja näkyvä keho","card4.p":"Näet kehosi ja jalkasi ensimmäisessä persoonassa, sekä HUDin, jossa elämät, nälkä ja ilmakuplat, jottet huku.",
+      "como.eyebrow":"Miten toimii","como.h2":"Pelaajasta mobiksi kolmessa vaiheessa",
+      "como.p":"Ratsastat mobilla näkymättömänä ja syötteesi ohjaa sitä palvelimella; asiakas asettaa kameran sen silmiin. Poistuessasi ilmestyt eläimen viereen.",
+      "flow1.n":"01 · HALTUUNOTTO","flow1.h3":"Valitset mobin","flow1.p":"Katso sitä ja käytä <b>/possess</b>, valitsinta <b>@e[tag=…]</b>, tai kyykisty ja napsauta oikealla.",
+      "flow2.n":"02 · OHJAA","flow2.h3":"Näyttelet sen","flow2.p":"Ratsastat sen päällä näkymättömänä; WASD + hiiri liikuttavat ja kääntävät sitä. Sen tekoäly sammuu.",
+      "flow3.n":"03 · OLE","flow3.h3":"Olet mob","flow3.p":"Kamera sen päässä, näkyvä keho ja HUD. Poistu <b>V</b>:llä ja olet taas oma itsesi, eläimen vieressä.",
+      "ctrl.eyebrow":"Ohjaus","ctrl.h2":"Ohjaus ja tilat","ctrl.p":"Modi tunnistaa mobin tyypin ja valitsee tilan: maa, lento tai uinti. Vaatii OP-tason 2.",
+      "kbd.mouse":"Hiiri","kbd.space":"Väli","kbd.lclick":"Vasen",
+      "km1":"Liiku / etene katseen suuntaan","km2":"Suuntaa pää (<b>välitön</b> käännös)","km3":"Hyppää · <b>ylös</b> lennossa/uinnissa","km4":"Liiku hitaasti · <b>alas</b> lennossa/uinnissa","km5":"Mob <b>hyökkää</b> edessä olevaan (äänellä)","km6":"Valmiusasento · <b>karhu nousee</b> karjahtaen","km7":"Poistu haltuunotosta",
+      "mode1.h4":"Maa","mode1.p":"Zombit, luurangot, lehmät, karhut, sudet… painovoima, hyppy ja lohkojen ylitys.",
+      "mode2.h4":"Lento","mode2.p":"Mehiläiset, papukaijat, ghastit, allayt… vapaa 3D-liike katseen mukaan.",
+      "mode3.h4":"Uinti","mode3.p":"Mikä tahansa mob veden alla siirtyy 3D-hallintaan: väli ylös, kyykky alas.",
+      "cmds.label":"Komennot:",
+      "ver.eyebrow":"Historia · julkaisut","ver.h2":"Versiosta 0.1.0 versioon 1.0.0","ver.p":"Modin koko matka Fabricilla ensimmäiseen vakaaseen versioon, kehitysvaiheittain. Jokainen kohta tiivistää, mitä kyseinen julkaisu tuo.",
+      "legend.control":"Hallinta","legend.accion":"Toiminta","legend.pulido":"Viimeistely","legend.estable":"Vakaa",
+      "rel1.tag":"Vaihe 1 · POV","rel1.h3":"Näe mobin silmien läpi","rel1.ul":"<li>Kamera mobin silmiin (<b>setCameraEntity</b>), ensimmäinen persoona.</li><li>Haltuunotto komennolla <b>/possess</b> (katse tai valitsin) ja <b>kyykky + oikea napsautus</b>.</li><li>Poistu <b>V</b>-näppäimellä tai <b>/unpossess</b>; kehosi pysyy piilossa ja haavoittumattomana.</li><li>Automaattinen poistuminen, jos mob kuolee tai yhteys katkeaa.</li>",
+      "rel2.tag":"Vaihe 2 · Hallinta","rel2.h3":"Täysi hallinta WASD + hiiri","rel2.ul":"<li>Pelaajan syöte kulkee palvelimelle paketilla (<b>DriveInput</b>) ja ohjaa mobia.</li><li>Mobin <b>tekoäly sammuu</b>, jottei se taistele ohjaustasi vastaan.</li>","rel2.note":"Liikkeessä oli vielä bugi, korjattu 0.3.0:ssa.",
+      "rel3.tag":"Hallinta","rel3.h3":"Liikkeen korjaus + turvallinen hyökkäys","rel3.ul":"<li><b>NoAI</b>:lla mobin <b>travel()</b> ei liikuta → se liikutetaan käsin <b>mob.move()</b>:lla (manuaalinen fysiikka: hallinta, painovoima ja hyppy).</li><li>Client-mixin, joka <b>peruu hyökkäyksen</b>, jottet osu itseesi.</li>",
+      "rel4.tag":"Vaihe 3 · Toiminta","rel4.h3":"Lento, uinti, hyökkäys ja asento","rel4.ul":"<li><b>Lentävät ja vesieläimet</b> 3D:ssä (väli ylös, kyykky alas).</li><li><b>Vasen napsautus</b>: mob osuu edessä olevaan (raycast silmistä).</li><li><b>R</b>-näppäin: aggressiivinen asento (<b>setAggressive</b>).</li>",
+      "rel5.tag":"Viimeistely","rel5.h3":"Näkymätön ratsastus teleportin sijaan","rel5.ul":"<li>Nyt <b>ratsastat mobilla</b> (näkymätön ratsastaja): sujuva liike, ei nykimistä eikä työntöä.</li><li>Poistuessasi ilmestyt <b>eläimen viereen</b>, et sinne mistä otit haltuun.</li><li>Yhteinen mixin (<b>wantsToStopRiding → false</b>): kyykistyminen ei enää pudota selästä.</li>",
+      "rel6.tag":"Viimeistely","rel6.h3":"Näkyvä keho ensimmäisessä persoonassa","rel6.ul":"<li><b>0.6.0</b> — haltuun otetun mobin keho piirretään (näet jalat/kädet); pää piilotettu ihmismäisillä. Asento ja hyökkäysanimaatio näkyvät.</li><li><b>0.6.1</b> — yleinen pään piilotus eläimille.</li><li><b>0.6.2</b> — nostettu kamera nelijalkaisilla (tuntui ratsastukselta → peruttu).</li>",
+      "rel7.tag":"Viimeistely","rel7.h3":"Välitön kamera, ei ratsastuksen tuntua","rel7.ul":"<li>Näkymä <b>kääntyy heti</b> hiirellä (setRotation per ruutu), ei verkkoviivettä.</li><li>Nostettu kamera peruttu; nelijalkaisilla siisti näkymä silmistä.</li>",
+      "rel8.tag":"Viimeistely","rel8.h3":"Näkyvät jalat ja pystyyn nouseva karhu","rel8.ul":"<li>Nelijalkaisilla/sudella pää ja vartalo piilotetaan <b>jalat säilyttäen</b> (QuadrupedModel/WolfModel-accessorit).</li><li><b>Karhu nousee takajaloilleen</b> (setStanding) R-näppäimellä.</li><li>Varoitusäänet: karhun karjahdus, suden murina tai sen ympäristöääni.</li>",
+      "rel9.tag":"Viimeistely","rel9.h3":"Kamera päässä, kalibroitu mobkohtaisesti","rel9.ul":"<li><b>0.9.0</b> — kamera siirtyy eteen päähän nelijalkaisilla; mikä tahansa mob ui vedessä.</li><li><b>0.9.1</b> — keho kohdistuu heti katseeseesi.</li><li><b>0.9.2 · 0.9.3</b> — hienosäädetty mallin <b>oikeasta pään sijainnista</b> (head.z).</li><li><b>0.9.4</b> — pystyssä oleva karhu näyttää jalat ja vartalon; hyökkäysnapsautuksessa on nyt ääni.</li>",
+      "rel10.tag":"Vakaa","rel10.h3":"Haltuunotto-HUD — ensimmäinen vakaa versio","rel10.ul":"<li>HUD ylhäällä keskellä: <b>sydämet</b> (mobin elämät), <b>nälkä</b> ja <b>ilmakuplat</b> (sukellettaessa), pelin omilla kuvakkeilla.</li><li>Modi on valmis: sujuva haltuunotto, hyvin rajattu keho, hyökkäys, asento ja ruutupalaute.</li><li><b>1.0.0:n jälkeen:</b> siirretty <b>NeoForgeen ja Forgeen</b> (multiloader-monorepo).</li>",
+      "ld.h2":"Yksi modi, kolme loaderia","ld.p":"Logiikka on kerran kansiossa <span style='font-family:var(--font-mono)'>common/</span> ja jokainen loader tuo oman käynnistyksensä (tapahtumat + verkko) abstraktiokerroksen päälle.","ld.fabric.st":"● testattu pelissä","ld.wip":"◐ kääntyy · testattava",
+      "inst.eyebrow":"Asennus","inst.h2":"Käyttöönotto",
+      "step1":"Lataa <b>loaderisi</b> jar <b>Releases</b>-välilehdeltä (<code>mobcontroller-&lt;loader&gt;-1.0.0.jar</code>).",
+      "step2":"Aseta se kansioon <code>.minecraft/mods</code>. <b>Fabricissa</b> lisää myös <b>Fabric API</b>.",
+      "step3":"Asenna se <b>asiakkaalle</b> ja moninpelissä myös <b>palvelimelle</b> (kamera on asiakaspuolella).",
+      "step4":"Mene maailmaan, jossa <b>huijaukset</b> päällä (OP-taso 2), katso mobia ja käytä <code>/possess</code> tai kyykky + oikea napsautus.",
+      "foot.by":"Minecraft 1.21.1 · Fabric · NeoForge · Forge · tekijä Kalevi Latva-äijö","foot.right":"Mob Director -modin kumppani · CC0-1.0-lisenssi"
+    }
+  };
+
+  (function () {
+    var root = document.documentElement;
+
+    function applyLang(lang) {
+      if (!I18N[lang]) lang = "es";
+      root.setAttribute("lang", lang);
+      document.querySelectorAll("[data-i18n]").forEach(function (el) {
+        var k = el.getAttribute("data-i18n");
+        var v = I18N[lang][k];
+        if (v != null) el.innerHTML = v;
+      });
+      document.querySelectorAll(".langsel button").forEach(function (b) {
+        b.setAttribute("aria-pressed", b.dataset.lang === lang ? "true" : "false");
+      });
+      try { localStorage.setItem("mobctl-lang", lang); } catch (e) {}
+    }
+
+    document.querySelectorAll(".langsel button").forEach(function (b) {
+      b.addEventListener("click", function () { applyLang(b.dataset.lang); });
+    });
+
+    var initial = "es";
+    try { var s = localStorage.getItem("mobctl-lang"); if (s) initial = s; else {
+      var n = (navigator.language || "es").slice(0, 2);
+      if (n === "fi") initial = "fi"; else if (n === "en") initial = "en"; else initial = "es";
+    } } catch (e) {}
+    applyLang(initial);
+
+    // theme toggle
+    var btn = document.getElementById("themeToggle");
+    function currentTheme() {
+      var t = root.getAttribute("data-theme");
+      if (t) return t;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    btn.addEventListener("click", function () {
+      var next = currentTheme() === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("mobctl-theme", next); } catch (e) {}
+    });
+    try { var st = localStorage.getItem("mobctl-theme"); if (st) root.setAttribute("data-theme", st); } catch (e) {}
+  })();
+</script>
