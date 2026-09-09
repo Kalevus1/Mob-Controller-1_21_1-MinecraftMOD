@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "CC0-1.0"
+
+[[mods]]
+modId = "mobcontroller"
+version = "${file.jarVersion}"
+displayName = "Mob Controller"
+authors = "Kalevus"
+description = '''
+Posee mobs y ve por sus ojos en primera persona: control total, vuelo/nado, atacar, pose y HUD.
+'''
+
+[[mixins]]
+config = "mobcontroller.mixins.json"
+
+[[mixins]]
+config = "mobcontroller.client.mixins.json"
+
+[[dependencies.mobcontroller]]
+	modId = "neoforge"
+	type = "required"
+	versionRange = "[21.1,)"
+	ordering = "NONE"
+	side = "BOTH"
+
+[[dependencies.mobcontroller]]
+	modId = "minecraft"
+	type = "required"
+	versionRange = "[1.21.1,1.22)"
+	ordering = "NONE"
+	side = "BOTH"
