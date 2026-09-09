@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "mobcontroller",
+	"version": "${version}",
+	"name": "Mob Controller",
+	"description": "Posee mobs y ve por sus ojos en primera persona. Complemento de Mob Director.",
+	"authors": [
+		"Kalevus"
+	],
+	"contact": {},
+	"license": "CC0-1.0",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.mobcontroller.fabric.MobControllerFabric"
+		],
+		"client": [
+			"com.mobcontroller.fabric.MobControllerFabricClient"
+		]
+	},
+	"mixins": [
+		"mobcontroller.mixins.json",
+		{
+			"config": "mobcontroller.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": ">=1.21.1 <1.22",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
