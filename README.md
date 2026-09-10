@@ -49,7 +49,7 @@ dentro —cinemáticas, documentales, eventos— sin dejar al mob a su IA.
 | **Espacio** | Saltar · **subir** en vuelo/nado |
 | **Shift** | Ir despacio · **bajar** en vuelo/nado |
 | **Click izq.** | El mob **golpea** lo que tiene delante (con sonido) |
-| **R** (mantener) | Pose de preparado · el **oso se para en dos patas** con rugido |
+| **R** (mantener) | Preparación de ataque |
 | **V** | Salir de la posesión |
 
 **Modos automáticos** según el mob: 🐾 terrestre · 🕊️ vuelo (voladores) · 🌊 nado (cualquier
