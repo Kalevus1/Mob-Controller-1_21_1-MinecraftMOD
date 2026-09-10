@@ -98,16 +98,16 @@ Camino del mod en Fabric hasta la primera versión estable, por fases.
 
 | Versión | Fase | Cambios |
 |---|---|---|
-| **0.1.0** | POV | Cámara a los ojos del mob (`setCameraEntity`); `/possess`, agacharse+click, salir con V/`/unpossess`; auto-salida al morir/desconectar. |
-| **0.2.0** | Control | Control total WASD+ratón vía packet `DriveInput`; se apaga la IA. *(movimiento con fallo, corregido en 0.3.0)* |
-| **0.3.0** | Control | Con NoAI el `travel()` no mueve → **movimiento manual** con `mob.move()`. Mixin de cliente que cancela el ataque (evita el crash de golpearte a ti mismo). |
-| **0.4.0** | Acción | **Vuelo/nado** en 3D; **atacar** siendo el mob (click, raycast); **pose** con R (`setAggressive`). |
-| **0.5.0** | Pulido | **Montar invisible** en vez de teletransportar (sin tirones; sales junto al animal). Mixin `wantsToStopRiding→false` (agacharse no desmonta). |
-| **0.6.0–0.6.2** | Pulido | **Cuerpo visible** en 1ª persona (cabeza oculta en humanoides); pose y animación de ataque. Intentos de vista para cuadrúpedos (0.6.2 cámara elevada, revertida). |
-| **0.7.0** | Pulido | **Cámara instantánea** (`setRotation` por fotograma), sin sensación de montar; cuadrúpedos con vista limpia. |
-| **0.8.0** | Pulido | **Patas visibles** en cuadrúpedos/lobo (ocultar cabeza+torso vía accessors); el **oso se para** (`setStanding`) + sonidos. |
-| **0.9.0–0.9.4** | Pulido | **Cámara en la cabeza** calibrada por la posición real del modelo (`head.z`); **nadar** para todos los mobs; cuerpo alineado al instante con la mirada; sonido al atacar. |
-| **1.0.0** | Estable | **HUD de posesión** (vida, hambre, aire); primera versión estable. Después: **multiloader** (Fabric + NeoForge + Forge). |
+| **0.1.0**    | POV | Cámara a los ojos del mob (`setCameraEntity`); `/possess`, agacharse+click, salir con V/`/unpossess`; auto-salida al morir/desconectar. |
+| **0.2.0**    | Control | Control total WASD+ratón vía packet `DriveInput`; se apaga la IA. *(movimiento con fallo, corregido en 0.3.0)* |
+| **0.3.0**    | Control | Con NoAI el `travel()` no mueve → **movimiento manual** con `mob.move()`. Mixin de cliente que cancela el ataque (evita el crash de golpearte a ti mismo). |
+| **0.4.0**    | Acción | **Vuelo/nado** en 3D; **atacar** siendo el mob (click, raycast); **pose** con R (`setAggressive`). |
+| **0.5.0**    | Pulido | **Montar invisible** en vez de teletransportar (sin tirones; sales junto al animal). Mixin `wantsToStopRiding→false` (agacharse no desmonta). |
+| **0.6.0–0.6.2**    | Pulido | **Cuerpo visible** en 1ª persona (cabeza oculta en humanoides); pose y animación de ataque. Intentos de vista para cuadrúpedos (0.6.2 cámara elevada, revertida). |
+| **0.7.0**    | Pulido | **Cámara instantánea** (`setRotation` por fotograma), sin sensación de montar; cuadrúpedos con vista limpia. |
+| **0.8.0**    | Pulido | **Patas visibles** en cuadrúpedos/lobo (ocultar cabeza+torso vía accessors); el **oso se para** (`setStanding`) + sonidos. |
+| **0.9.0–0.9.4**    | Pulido | **Cámara en la cabeza** calibrada por la posición real del modelo (`head.z`); **nadar** para todos los mobs; cuerpo alineado al instante con la mirada; sonido al atacar. |
+| **1.0.0**    | Estable | **HUD de posesión** (vida, hambre, aire); primera versión estable. Después: **multiloader** (Fabric + NeoForge + Forge). |
 
 ---
 
